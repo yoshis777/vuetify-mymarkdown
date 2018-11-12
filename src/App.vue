@@ -8,7 +8,7 @@
       app
     >
       <v-list>
-        <v-list-tile 
+        <v-list-tile
           value="true"
           v-for="(item, i) in items"
           :key="i"
@@ -45,12 +45,7 @@
           <v-layout column align-center>
             <img src="/public/v.png" alt="Vuetify.js" class="mb-5" />
             <blockquote>
-              &#8220;First, solve the problem. Then, write the code.&#8221;
-              <footer>
-                <small>
-                  <em>&mdash;John Johnson</em>
-                </small>
-              </footer>
+              <Home v-if="isLogin"></Home>
             </blockquote>
           </v-layout>
         </v-slide-y-transition>
@@ -78,6 +73,9 @@
 </template>
 
 <script>
+  import Home from "./components/Home.vue";
+  import Editor from "./components/Editor.vue";
+
   export default {
     data () {
       return {
@@ -90,8 +88,27 @@
         miniVariant: false,
         right: true,
         rightDrawer: false,
-        title: 'Vuetify.js'
+        title: 'Vuetify.js',
+        isLogin: false,
+        userData: null
       }
+    },
+    created: function() {
+      firebase.auth().onAuthStateChanged(user => {
+        //console.log(user);
+        if(user) {
+          this.isLogin = true;
+          this.userData = user;
+        } else {
+          this.isLogin = false;
+          this.userData = null;
+        }
+      });
+    }
+    ,
+    components: {
+      Home: Home,
+      Editor: Editor
     }
   }
 </script>
