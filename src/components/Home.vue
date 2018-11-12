@@ -1,6 +1,6 @@
 <template>
   <div id="home">
-    <v-btn @click="googleLogin">Googleアカウントでログイン</v-btn>
+     <v-btn @click="googleLogin">Googleアカウントでログイン</v-btn>
   </div>
 </template>
 <script>

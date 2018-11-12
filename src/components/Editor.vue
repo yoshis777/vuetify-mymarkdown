@@ -1,23 +1,91 @@
 <template>
-  <div class="editor">
-    <h1>エディター画面</h1>
-    <span>{{ user.displayName }}</span>
-    <button @click="logout">ログアウト</button>
-    <div class="editorWrapper">
-      <div class="memoListWrapper">
-        <!-- :key=indexにより配列要素の識別子として:keyを与えることでパフォーマンス向上する。(DBでいうインデックスみたいな感じ) -->
-        <!-- keyはユニークな識別子(memo.idみたいな) -->
-        <div class="memoList" v-for="(memo, index) in memos" :key="index" @click="selectMemo(index)" :data-selected="index === selectedIndex">
-          <p class="memoTitle">{{ displayTitle(memo.markdown) }}</p>
-        </div>
-        <button class="addMemoBtn" @click="addMemo">メモの追加</button>
-        <button class="deleteMemoBtn" @click="deleteMemo" v-if="memos.length > 1">選択中のメモを削除</button>
-        <button class="saveMemosBtn" @click="saveMemos">メモの保存</button>
-      </div>
-      <textarea class="markdown" v-model="memos[selectedIndex].markdown" title=""></textarea>
-      <div class="preview markdown-body" v-html="preview()"></div>
-    </div>
-  </div>
+  <v-app>
+    <v-navigation-drawer
+            fixed
+            :mini-variant="miniVariant"
+            :clipped="clipped"
+            v-model="drawer"
+            app
+    >
+      <v-btn class="addMemoBtn" @click="addMemo">メモの追加</v-btn>
+      <v-list>
+        <v-list-tile
+                value="true"
+                v-for="(memo, index) in memos"
+                :key="index"
+                @click="selectMemo(index)"
+                :data-selected="index === selectedIndex"
+        >
+          <v-list-tile-action>
+            <v-icon v-html="memo.icon"></v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="displayTitle(memo.markdown)"></v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
+    <v-toolbar fixed app :clipped-left="clipped">
+      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-btn icon @click.stop="miniVariant = !miniVariant">
+        <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"></v-icon>
+      </v-btn>
+      <v-btn icon @click.stop="clipped = !clipped">
+        <v-icon>web</v-icon>
+      </v-btn>
+      <v-toolbar-title v-text="title"></v-toolbar-title>
+      <v-spacer></v-spacer>
+      <p v-if="!!user">{{user.displayName}}<br>でログイン中</p>
+      <v-btn color="#ccc" @click="logout">ログアウト</v-btn>
+      <v-btn icon @click.stop="rightDrawer = !rightDrawer">
+        <v-icon>menu</v-icon>
+      </v-btn>
+    </v-toolbar>
+    <v-content>
+      <v-container fluid grid-list-md>
+        <v-slide-y-transition mode="out-in">
+          <v-layout row align-center>
+            <v-flex xs6>
+              <v-textarea
+                      outline
+                      name="input-7-4"
+                      label="Writing Space"
+                      value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
+                      v-model="memos[selectedIndex].markdown"
+              ></v-textarea>
+            </v-flex>
+            <v-flex xs6>
+              <p>Markdown Preview</p>
+              <v-container
+                      v-html="preview()"
+              ></v-container>
+            </v-flex>
+            <blockquote>
+
+            </blockquote>
+          </v-layout>
+        </v-slide-y-transition>
+      </v-container>
+    </v-content>
+    <v-navigation-drawer
+            temporary
+            :right="right"
+            v-model="rightDrawer"
+            fixed
+    >
+      <v-list>
+        <v-list-tile @click.native="right = !right">
+          <v-list-tile-action>
+            <v-icon>compare_arrows</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-title>Switch drawer (click me)</v-list-tile-title>
+        </v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
+    <v-footer :fixed="fixed" app>
+      <span>&copy; 2017</span>
+    </v-footer>
+  </v-app>
 </template>
 
 <script>
@@ -27,6 +95,16 @@
     props: ["user"],
     data() {
       return {
+        clipped: false,
+        drawer: true,
+        fixed: false,
+        items: [
+            { icon: 'bubble_chart', title: 'Inspire' }
+        ],
+        miniVariant: false,
+        right: true,
+        rightDrawer: false,
+        title: 'エディター画面',
         memos: [
           {
             markdown: ""
