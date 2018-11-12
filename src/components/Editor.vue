@@ -8,6 +8,8 @@
             app
     >
       <v-btn class="addMemoBtn" @click="addMemo">メモの追加</v-btn>
+      <v-btn class="deleteMemoBtn" @click="deleteMemo" v-if="memos.length > 1">選択中のメモを削除</v-btn>
+      <v-btn class="saveMemosBtn" @click="saveMemos">メモの保存</v-btn>
       <v-list>
         <v-list-tile
                 value="true"
