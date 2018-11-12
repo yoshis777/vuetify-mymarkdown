@@ -19,7 +19,7 @@
                 :data-selected="index === selectedIndex"
         >
           <v-list-tile-action>
-            <v-icon v-html="memo.icon"></v-icon>
+            <v-icon>web</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title v-text="displayTitle(memo.markdown)"></v-list-tile-title>
